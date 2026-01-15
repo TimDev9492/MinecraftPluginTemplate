@@ -72,7 +72,7 @@ cd "${PLUGIN_NAME}"
 sed -i "s/^rootProject\.name = '${INITIAL_PROJECT_NAME}'/rootProject\.name = '${PLUGIN_NAME}'/" settings.gradle
 
 # move MinecraftPluginTemplate.java to tmp dir
-mv "src/main/java/${package_to_path "${INITIAL_GROUP_ID}.${INITIAL_PACKAGE_NAME}.${INITIAL_PROJECT_NAME}.java"}" "${TMP_DIR}"
+mv "src/main/java/$(package_to_path "${INITIAL_GROUP_ID}.${INITIAL_PACKAGE_NAME}.${INITIAL_PROJECT_NAME}.java")" "${TMP_DIR}"
 # remove old group and package directories
 rm -rf src/main/java/*
 PACKAGE_DIR="$src/main/java/(package_to_path "${GROUP_ID}.${PACKAGE_NAME}")"
