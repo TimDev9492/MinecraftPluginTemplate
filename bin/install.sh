@@ -48,7 +48,7 @@ prompt_default_value() {
 
 package_to_path() {
   local package_uri="$1"
-  echo "$package_uri" | sed 's/\./\//'
+  echo "$package_uri" | sed 's/\./\//g'
 }
 
 abort() {
