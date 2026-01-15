@@ -8,7 +8,7 @@ version: '0.1.0'
 api-version: '1.21'
 # The spigot api version this plugin gets compiled against
 # (also displayed as the minimum version in the output jar filename)
-compiled-version: '1.21'
+compiled-version: '1.21.11'
 
 # Select which fields of this yml get printed to STDOUT using the printMetadata Task
 expose:
