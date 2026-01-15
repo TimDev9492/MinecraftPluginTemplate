@@ -51,11 +51,6 @@ package_to_path() {
   echo "$package_uri" | sed 's/\./\//g'
 }
 
-abort() {
-  echo "Aborted."
-  exit 1
-}
-
 check_prerequisites
 
 # Prompt the user for input values
