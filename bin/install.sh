@@ -64,10 +64,12 @@ prompt_default_value PACKAGE_NAME "Enter the name of your java package" "${PLUGI
 prompt_default_value GROUP_ID "Enter the java group id" "me.$(whoami)"
 
 ### Adjust plugin name, package and groud id ###
-cd ..
-[ -d "${PLUGIN_NAME}" ] && echo "Directory '${PLUGIN_NAME}' already exists. Exiting..." && exit 1
-mv "${INITIAL_PROJECT_NAME}" "${PLUGIN_NAME}"
-cd "${PLUGIN_NAME}"
+if [ "${PLUGIN_NAME}" != "${REPO_NAME}" ]; then
+  cd ..
+  [ -d "${PLUGIN_NAME}" ] && echo "Directory '${PLUGIN_NAME}' already exists. Exiting..." && exit 1
+  mv "${REPO_NAME}" "${PLUGIN_NAME}"
+  cd "${PLUGIN_NAME}"
+fi
 
 sed -i "s/^rootProject\.name = '${INITIAL_PROJECT_NAME}'/rootProject\.name = '${PLUGIN_NAME}'/" settings.gradle
 
