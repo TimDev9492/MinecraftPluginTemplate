@@ -8,17 +8,17 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd ${SCRIPT_DIR}/../
 REPO_NAME=$(basename $(pwd))
 
-TMP_DIR=./bin/tmp
-mkdir -p ${TMP_DIR}
+TMP_DIR="./bin/tmp"
+mkdir -p "${TMP_DIR}"
 
 cleanup() {
-  rm -rf ${TMP_DIR}
+  rm -rf "${TMP_DIR}"
 }
 
 trap cleanup EXIT
 
 check_prerequisites() {
-  local required_commands=("printf" "sed")
+  local required_commands=("printf" "sed" "git")
 
   # Accept more requirements passed as arguments
   if [ $# -gt 0 ]; then
@@ -74,10 +74,10 @@ fi
 sed -i "s/^rootProject\.name = '${INITIAL_PROJECT_NAME}'/rootProject\.name = '${PLUGIN_NAME}'/" settings.gradle
 
 # move MinecraftPluginTemplate.java to tmp dir
-mv "src/main/java/$(package_to_path "${INITIAL_GROUP_ID}.${INITIAL_PACKAGE_NAME}.${INITIAL_PROJECT_NAME}.java")" "${TMP_DIR}"
+mv "src/main/java/$(package_to_path "${INITIAL_GROUP_ID}.${INITIAL_PACKAGE_NAME}.${INITIAL_PROJECT_NAME}").java" "${TMP_DIR}"
 # remove old group and package directories
 rm -rf src/main/java/*
-PACKAGE_DIR="$src/main/java/(package_to_path "${GROUP_ID}.${PACKAGE_NAME}")"
+PACKAGE_DIR="src/main/java/$(package_to_path "${GROUP_ID}.${PACKAGE_NAME}")"
 PLUGIN_JAVA_FILE="${PACKAGE_DIR}/${PLUGIN_NAME}.java"
 # create new package directories
 mkdir -p "${PACKAGE_DIR}"
@@ -92,11 +92,19 @@ sed -i "s/^main: ${INITIAL_GROUP_ID}.${INITIAL_PACKAGE_NAME}.${INITIAL_PROJECT_N
 
 sed -i "s/^group = '${INITIAL_GROUP_ID}'/group = '${GROUP_ID}'/" build.gradle
 
-#while :; do
-#  prompt_default_value SPIGOT_API_VERSION "Enter the spigot API version for this project"
-#  if ./gradlew build; then
-#    break
-#  else
-#    echo "Failed to compile project for spigot API version: ${SPIGOT_API_VERSION}"
-#  fi
-#done
+while :; do
+  prompt_default_value SPIGOT_API_VERSION "Enter the spigot API version for this project"
+  sed -i "s/^compiled-version: '.*'$/compiled-version: '${SPIGOT_API_VERSION}'/" src/main/resources/plugin.yml
+
+  if ./gradlew build >/dev/null 2>&1; then
+    break
+  else
+    echo "Failed to compile project for spigot API version '${SPIGOT_API_VERSION}'"
+  fi
+done
+
+# setup initial commit
+prompt_default_value COMMIT_MESSAGE "Success! Enter a commit message for the automated setup modifications" "chore: setup project structure"
+git add . && git commit -m "${COMMIT_MESSAGE}"
+
+echo "Successfully installed plugin development environment for '${PLUGIN_NAME}'!"
