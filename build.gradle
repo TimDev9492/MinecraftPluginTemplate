@@ -51,6 +51,14 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+tasks.register('deploy', Exec) {
+    commandLine = ["./deploy.sh", "build/libs/$jarFilename"]
+}
+
+tasks.register('cleanBuildDeploy', GradleBuild) {
+    tasks = ['clean', 'build', 'deploy']
+}
+
 tasks.register('printMetadata') {
     doLast{
         println "filename=$jarFilename"
