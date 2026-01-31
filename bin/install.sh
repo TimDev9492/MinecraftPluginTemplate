@@ -92,6 +92,7 @@ while :; do
   sed -i "s/^compiled-version: '.*'$/compiled-version: '${SPIGOT_API_VERSION}'/" src/main/resources/plugin.yml
 
   if ./gradlew build >/dev/null 2>&1; then
+    ./gradlew clean >/dev/null 2>&1
     break
   else
     echo "Failed to compile project for spigot API version '${SPIGOT_API_VERSION}'"
