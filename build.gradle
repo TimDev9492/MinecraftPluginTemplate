@@ -49,7 +49,7 @@ tasks.jar {
 
 // SHADING: uncomment this section
 //tasks.shadowJar {
-//    archiveName.set(jarFilename)
+//    archiveFileName.set(jarFilename)
 //
 //    [
 //            // add package names to shade here
