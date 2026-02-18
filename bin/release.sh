@@ -52,15 +52,15 @@ semver_ge() {
   local pre="$1"
   local fut="$2"
 
-  IFS='.' read -r a1 a2 a3 <<< "$pre"
-  IFS='.' read -r b1 b2 b3 <<< "$fut"
+  IFS='.' read -r a1 a2 a3 <<<"$pre"
+  IFS='.' read -r b1 b2 b3 <<<"$fut"
 
-  if (( a1 != b1 )); then
-    (( a1 <= b1 ))
-  elif (( a2 != b2 )); then
-    (( a2 <= b2 ))
+  if ((a1 != b1)); then
+    ((a1 <= b1))
+  elif ((a2 != b2)); then
+    ((a2 <= b2))
   else
-    (( a3 <= b3 ))
+    ((a3 <= b3))
   fi
 }
 
@@ -81,17 +81,17 @@ PLUGIN_YML_FILE="src/main/resources/plugin.yml"
 # Prompt user for project version bump
 OLD_PROJECT_VERSION=$(extract_yml_string "${PLUGIN_YML_FILE}" "version")
 while :; do
-  prompt_default_value PROJECT_VERSION "Enter the version to compile for" \
-      "${OLD_PROJECT_VERSION}"
-    if echo "${PROJECT_VERSION}" | grep -qE '^([0-9]+\.){1,2}[0-9]+$'; then
-      if semver_ge "${OLD_PROJECT_VERSION}" "${PROJECT_VERSION}"; then
-        break;
-      else
-        echo "Cannot downgrade the project version from '${OLD_PROJECT_VERSION}' -> '${PROJECT_VERSION}'"
-      fi
+  prompt_default_value PROJECT_VERSION "Enter the version tag for this project" \
+    "${OLD_PROJECT_VERSION}"
+  if echo "${PROJECT_VERSION}" | grep -qE '^([0-9]+\.){1,2}[0-9]+$'; then
+    if semver_ge "${OLD_PROJECT_VERSION}" "${PROJECT_VERSION}"; then
+      break
     else
-      echo "Version '${PROJECT_VERSION}' invalid, must be semantic version!"
+      echo "Cannot downgrade the project version from '${OLD_PROJECT_VERSION}' -> '${PROJECT_VERSION}'"
     fi
+  else
+    echo "Version '${PROJECT_VERSION}' invalid, must be semantic version!"
+  fi
 done
 
 # Prompt user for minecraft version
@@ -99,7 +99,7 @@ while :; do
   prompt_default_value SPIGOT_COMPILE_VERSION "Enter the version to compile for" \
     "$(extract_yml_string "${PLUGIN_YML_FILE}" "compiled-version")"
   if echo "${SPIGOT_COMPILE_VERSION}" | grep -qE '^([0-9]+\.){1,2}[0-9]+$'; then
-    break;
+    break
   else
     echo "Version '${SPIGOT_COMPILE_VERSION}' invalid, must be semantic version!"
   fi
@@ -118,8 +118,8 @@ set_yml_string "${PLUGIN_YML_FILE}" "compiled-version" "${SPIGOT_COMPILE_VERSION
 set_yml_string "${PLUGIN_YML_FILE}" "api-version" "${PLUGIN_YML_API_VERSION}"
 
 echo "Building project version '${PROJECT_VERSION}'" \
-     "for minecraft '${SPIGOT_COMPILE_VERSION}'" \
-     "with api-version '${PLUGIN_YML_API_VERSION}'"
+  "for minecraft '${SPIGOT_COMPILE_VERSION}'" \
+  "with api-version '${PLUGIN_YML_API_VERSION}'"
 while :; do
   if ./gradlew build 1>/dev/null; then
     ./gradlew clean >/dev/null 2>&1
